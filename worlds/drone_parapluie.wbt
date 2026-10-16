@@ -1,0 +1,121 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/SandyGround.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/road/protos/StraightRoadSegment.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Pavement.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/buildings/protos/SimpleBuilding.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/dji/mavic/protos/Mavic2Pro.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "../protos/UmbrellaShape.proto"
+
+WorldInfo {
+  info [
+    "Simulation Drone Protection Solaire"
+    "Le drone suit automatiquement le piéton pour le protéger."
+    "Mode 1 : Suivi GPS (Automatique)"
+    "Mode 2 : Suivi par Vision IA (YOLO + OpenCV)"
+  ]
+  title "Drone Protection Solaire"
+  basicTimeStep 8
+  defaultDamping Damping {
+    linear 0.5
+    angular 0.5
+  }
+}
+Viewpoint {
+  orientation -0.18 0.03 0.98 2.85
+  position 18.5 -22.0 12.0
+  follow "Mavic 2 PRO"
+  followSmoothness 0.15
+}
+TexturedBackground {
+  texture "noon_building_overcast"
+  luminosity 1.8
+}
+TexturedBackgroundLight {
+}
+Floor {
+  size 120 120
+  tileSize 3 3
+  appearance SandyGround {
+  }
+}
+# ── Route principale (axe X) ──
+StraightRoadSegment {
+  translation -30 0 0.01
+  rotation 0 0 1 0
+  width 5
+  length 60
+  appearance Pavement {
+  }
+}
+# ── Route secondaire (axe Y) ──
+StraightRoadSegment {
+  translation 0 -30 0.01
+  rotation 0 0 1 1.5708
+  name "road_perpendicular"
+  width 5
+  length 60
+  appearance Pavement {
+  }
+}
+# ── Petite maison ──
+SimpleBuilding {
+  translation 15 12 0
+  name "petite_maison"
+  floorHeight 2.8
+  floorNumber 2
+  wallType "residential building"
+}
+# ── Drone avec parapluie ──
+Mavic2Pro {
+  hidden position_0_0 -7.378961712482624e-09
+  hidden position_6_0 -9.1358125774042e-09
+  hidden position_7_0 3.252694909243189e-09
+  translation -5 0 0.0659207
+  rotation 0 0 1 0.0
+  controller "drone_controller"
+  supervisor TRUE
+  bodySlot [
+    Group {
+      children [
+        UmbrellaShape {
+          translation 0 0 0.1
+          color 0.15 0.7 0.3
+          scale 0.85 0.85 0.85
+        }
+        Camera {
+          translation 0 0 -0.05
+          rotation 0.6532654049401873 -0.6532654049401873 -0.382738319765171 -2.4189
+          name "track_camera"
+          fieldOfView 1.5
+          width 640
+          height 480
+        }
+      ]
+    }
+  ]
+  cameraSlot [
+    Camera {
+      translation 0 0 -0.05
+      name "camera"
+      fieldOfView 1.5
+      width 640
+      height 480
+    }
+  ]
+}
+DEF PEDESTRIAN Pedestrian {
+  translation -12 0 1.27
+  name "PEDESTRIAN"
+  controller "pedestrian_controller"
+  controllerArgs [
+    "--trajectory=-15 0, 15 0, -15 0"
+    "--speed=3.5"
+  ]
+  shirtColor 0.1 0.6 0.2
+  pantsColor 0.15 0.15 0.15
+}
